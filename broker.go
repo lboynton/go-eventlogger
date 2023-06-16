@@ -7,9 +7,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/hashicorp/go-multierror"
 	"sync"
 	"time"
+
+	"github.com/hashicorp/go-multierror"
 )
 
 // RegistrationPolicy is used to specify what kind of policy should apply when
@@ -380,6 +381,8 @@ func (b *Broker) RemovePipelineAndNodes(t EventType, id PipelineID) error {
 
 		switch nodeUsage.referenceCount {
 		case 0, 1:
+			nc := NewNodeController(b.nodes[nodeID].node)
+			nc.Close()
 			// Node is not currently in use, or was only being used by this pipeline
 			delete(b.nodes, nodeID)
 		default:

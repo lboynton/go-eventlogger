@@ -32,6 +32,31 @@ type Node interface {
 	Type() NodeType
 }
 
+type NodeController struct {
+	n Node
+}
+
+func NewNodeController(n Node) *NodeController {
+	return &NodeController{n}
+}
+
+type Closer interface {
+	Close()
+}
+
+func (nc *NodeController) Close() {
+	n := nc.n
+	for {
+		switch t := n.(type) {
+		case Closer:
+			t.Close()
+			return
+		default:
+			return
+		}
+	}
+}
+
 type linkedNode struct {
 	node   Node
 	nodeID NodeID
